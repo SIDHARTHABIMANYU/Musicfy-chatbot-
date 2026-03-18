@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Musicfy AI Assistant</title>
+  <meta name="description" content="Chat with Musicfy's AI music assistant — search, play, download songs and manage playlists using natural language." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Background FX ── -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- ── App Shell ── -->
+  <div class="app-shell">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <span class="logo-text">Musicfy<span class="logo-ai">AI</span></span>
+        </div>
+        <button class="sidebar-close" id="sidebar-close" aria-label="Close sidebar">×</button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" id="nav-chat" onclick="switchTab('chat')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Chat
+        </button>
+        <button class="nav-btn" id="nav-history" onclick="switchTab('history')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          History
+        </button>
+        <button class="nav-btn" id="nav-commands" onclick="switchTab('commands')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Commands
+        </button>
+      </nav>
+
+      <div class="sidebar-status">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting...</span>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="http://localhost:5174" class="back-btn" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Open Musicfy
+        </a>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ── -->
+    <main class="main">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <button class="menu-btn" id="menu-btn" onclick="toggleSidebar()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="topbar-title">
+          <div class="topbar-avatar">🎵</div>
+          <div>
+            <h2>Musicfy Assistant</h2>
+            <p id="topbar-status">Checking backend…</p>
+          </div>
+        </div>
+        <button class="clear-btn" id="clear-btn" onclick="clearChat()" title="Clear chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </header>
+
+      <!-- ── Tab: Chat ── -->
+      <section class="tab-panel active" id="panel-chat">
+        <!-- Messages -->
+        <div class="messages-wrap" id="messages-wrap">
+          <div class="messages" id="messages">
+            <!-- Welcome bubble -->
+            <div class="bubble-row assistant">
+              <div class="bubble-avatar">🎵</div>
+              <div class="bubble assistant-bubble">
+                <p>👋 Hey there! I'm your <strong>Musicfy AI Assistant</strong>.</p>
+                <p style="margin-top:8px">Try saying things like:</p>
+                <div class="suggestion-chips">
+                  <button class="chip" onclick="sendSuggestion('play arabic kuthu')">▶ Play Arabic Kuthu</button>
+                  <button class="chip" onclick="sendSuggestion('search for love songs')">🔍 Search love songs</button>
+                  <button class="chip" onclick="sendSuggestion('download the current song')">⬇ Download song</button>
+                  <button class="chip" onclick="sendSuggestion('pause the music')">⏸ Pause</button>
+                  <button class="chip" onclick="sendSuggestion('stop the music')">⏹ Stop</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator (hidden by default) -->
+        <div class="typing-indicator hidden" id="typing-indicator">
+          <div class="bubble-row assistant">
+            <div class="bubble-avatar">🎵</div>
+            <div class="bubble assistant-bubble typing">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+          <div class="input-wrap">
+            <textarea
+              id="chat-input"
+              placeholder="Ask me to play, search, or download songs…"
+              rows="1"
+              autocomplete="off"
+              spellcheck="true"
+            ></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <p class="input-hint">Powered by Musicfy AI · <span id="model-name">loading…</span></p>
+        </div>
+      </section>
+
+      <!-- ── Tab: History ── -->
+      <section class="tab-panel" id="panel-history">
+        <div class="panel-inner">
+          <h2 class="panel-title">Conversation History</h2>
+          <div id="history-list">
+            <p class="empty-state">No history yet. Start chatting!</p>
+          </div>
+          <button class="danger-btn" onclick="clearHistory()">🗑 Clear History</button>
+        </div>
+      </section>
+
+      <!-- ── Tab: Commands ── -->
+      <section class="tab-panel" id="panel-commands">
+        <div class="panel-inner">
+          <h2 class="panel-title">Available Commands</h2>
+          <div class="commands-grid">
+            <div class="cmd-card">
+              <div class="cmd-icon">▶</div>
+              <h3>Play Song</h3>
+              <p>Ask to play any song by name, movie, or artist.</p>
+              <code>"play Srivalli"</code>
+            </div>
+            <div class="cmd-card">
+              <div class="cmd-icon">🔍</div>
+              <h3>Search Song</h3>
+              <p>Search for songs in the music library.</p>
+              <code>"search for love songs"</code>
+            </div>
+            <div class="cmd-card">
+              <div class="cmd-icon">⬇</div>
+              <h3>Download Song</h3>
+              <p>Download a specific song or the current playing song.</p>
+              <code>"download leo movie songs"</code>
+            </div>
+            <div class="cmd-card">
+              <div class="cmd-icon">⏸</div>
+              <h3>Pause</h3>
+              <p>Pause the currently playing music.</p>
+              <code>"pause the music"</code>
+            </div>
+            <div class="cmd-card">
+              <div class="cmd-icon">▶️</div>
+              <h3>Resume</h3>
+              <p>Resume paused music.</p>
+              <code>"resume"</code>
+            </div>
+            <div class="cmd-card">
+              <div class="cmd-icon">⏹</div>
+              <h3>Stop</h3>
+              <p>Stop the music entirely.</p>
+              <code>"stop the song"</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+  <!-- ── Music Player ── -->
+  <audio id="audio-player"></audio>
+  <div class="player-bar" id="player-bar">
+    <div class="player-info">
+      <div class="player-art" id="player-art">🎵</div>
+      <div class="player-text">
+        <div class="player-song" id="player-song">Not Playing</div>
+        <div class="player-artist" id="player-artist">AI Library</div>
+      </div>
+    </div>
+    <div class="player-controls">
+      <button class="play-btn" id="player-play-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
