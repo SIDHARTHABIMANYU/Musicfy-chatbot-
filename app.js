@@ -1,7 +1,7 @@
 // =====================================================
 // MUSICFY AI CHAT ASSISTANT — Frontend Logic
 // Use environment variables or window config for production deployment
-const BACKEND_URL = window.BACKEND_URL || 'http://localhost:8000';
+const BACKEND_URL = window.BACKEND_URL || 'http://13.234.225.151:3001';
 const SITE_URL = window.SITE_URL || 'http://localhost:5174';
 
 // --- State ---
@@ -122,7 +122,7 @@ async function sendMessage() {
   try {
     const res = await fetch(`${BACKEND_URL}/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': 'musicfy-secret-key-2026' },
       body: JSON.stringify({ message: text }),
       signal: AbortSignal.timeout(30000),
     });
@@ -133,12 +133,9 @@ async function sendMessage() {
     }
 
     const data = await res.json();
-    const response = data.response || {};
-
-    // --- Execute Music Logic ---
+    const response = { status: 'unknown_intent', data: {}, message: data.reply || '' };
     executeIntent(response, text);
-
-    appendAssistantBubble(text, response, data.model || '');
+    appendAssistantBubble(text, response, 'Qwen');
 
     // Persist to history
     chatHistory.push({ role: 'user', text, ts: now() });
