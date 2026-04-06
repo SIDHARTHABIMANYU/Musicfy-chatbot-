@@ -1,7 +1,8 @@
 // =====================================================
 // MUSICFY AI CHAT ASSISTANT — Frontend Logic
 // Use environment variables or window config for production deployment
-const BACKEND_URL = window.BACKEND_URL || 'http://13.234.225.151:3001';
+const PROXY_URL = 'http://13.234.225.151:3001';
+const BACKEND_URL = window.BACKEND_URL || PROXY_URL;
 const SITE_URL = window.SITE_URL || 'http://localhost:5174';
 
 // --- State ---
