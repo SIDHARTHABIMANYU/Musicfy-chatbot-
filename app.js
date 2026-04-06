@@ -1,9 +1,8 @@
 // =====================================================
 // MUSICFY AI CHAT ASSISTANT — Frontend Logic
-// Connects to backend at http://localhost:8000/chat
-// =====================================================
-
-const BACKEND_URL = 'http://localhost:8000';
+// Use environment variables or window config for production deployment
+const BACKEND_URL = window.BACKEND_URL || 'http://localhost:8000';
+const SITE_URL = window.SITE_URL || 'http://localhost:5174';
 
 // --- State ---
 let chatHistory = [];     // { role: 'user'|'assistant', text, response, ts }
@@ -12,33 +11,33 @@ let currentSong = null;   // Current playing song
 let isLoading = false;
 
 // --- DOM ---
-const messagesEl    = document.getElementById('messages');
-const messagesWrap  = document.getElementById('messages-wrap');
-const inputEl       = document.getElementById('chat-input');
-const sendBtn       = document.getElementById('send-btn');
-const typingEl      = document.getElementById('typing-indicator');
-const statusDot     = document.getElementById('status-dot');
-const statusText    = document.getElementById('status-text');
-const topbarStatus  = document.getElementById('topbar-status');
-const modelNameEl   = document.getElementById('model-name');
-const historyList   = document.getElementById('history-list');
+const messagesEl = document.getElementById('messages');
+const messagesWrap = document.getElementById('messages-wrap');
+const inputEl = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
+const typingEl = document.getElementById('typing-indicator');
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+const topbarStatus = document.getElementById('topbar-status');
+const modelNameEl = document.getElementById('model-name');
+const historyList = document.getElementById('history-list');
 
 // Player DOM
-const audioPlayer   = document.getElementById('audio-player');
-const playerBar     = document.getElementById('player-bar');
-const playerSong    = document.getElementById('player-song');
-const playerBtn     = document.getElementById('player-play-btn');
+const audioPlayer = document.getElementById('audio-player');
+const playerBar = document.getElementById('player-bar');
+const playerSong = document.getElementById('player-song');
+const playerBtn = document.getElementById('player-play-btn');
 
 // =====================================================
 // MUSIC PLAYER & LIBRARY
 // =====================================================
-const SITE_URL = 'http://localhost:5174';
+// (Removed hardcoded SITE_URL, now defined at top)
 
 async function loadSongs() {
   try {
     const res = await fetch(`${SITE_URL}/songs/songs.json`);
     if (res.ok) songs = await res.json();
-  } catch {}
+  } catch { }
 }
 
 function findSongByQuery(query) {
@@ -102,7 +101,7 @@ async function checkBackend() {
 }
 
 function setOnline(ok, modelName) {
-  statusDot.className   = 'status-dot ' + (ok ? 'online' : 'offline');
+  statusDot.className = 'status-dot ' + (ok ? 'online' : 'offline');
   statusText.textContent = ok ? 'Backend Online' : 'Backend Offline';
   topbarStatus.textContent = ok ? '🟢 Connected' : '🔴 Disconnected';
   if (modelNameEl && ok && modelName) modelNameEl.textContent = modelName;
@@ -142,7 +141,7 @@ async function sendMessage() {
     appendAssistantBubble(text, response, data.model || '');
 
     // Persist to history
-    chatHistory.push({ role: 'user',      text,     ts: now() });
+    chatHistory.push({ role: 'user', text, ts: now() });
     chatHistory.push({ role: 'assistant', response, ts: now() });
     saveHistory();
 
@@ -155,8 +154,8 @@ async function sendMessage() {
 
 function executeIntent(response, originalMessage) {
   const status = (response.status || '').toLowerCase();
-  const data   = response.data || {};
-  const songQ  = data.song || data.movie || originalMessage;
+  const data = response.data || {};
+  const songQ = data.song || data.movie || originalMessage;
 
   if (status === 'playing' || status === 'play_song') {
     const matches = findSongByQuery(songQ);
@@ -248,10 +247,10 @@ function appendErrorBubble(msg) {
 // =====================================================
 function buildResponseContent(response) {
   const status = (response.status || '').toLowerCase();
-  const data   = response.data   || {};
-  const intent = data.intent     || status;
-  const song   = data.song   || response.song   || null;
-  const movie  = data.movie  || response.movie  || null;
+  const data = response.data || {};
+  const intent = data.intent || status;
+  const song = data.song || response.song || null;
+  const movie = data.movie || response.movie || null;
   const artist = data.artist || response.artist || null;
   const errMsg = response.message || '';
 
@@ -265,58 +264,58 @@ function buildResponseContent(response) {
     case 'play_song':
       badgeClass = 'playing';
       badgeLabel = '▶ Playing';
-      humanText  = `Got it! Playing${song ? ` "${song}"` : ''}${movie ? ` from ‟${movie}"` : ''}${artist ? ` by ${artist}` : ''}.`;
+      humanText = `Got it! Playing${song ? ` "${song}"` : ''}${movie ? ` from ‟${movie}"` : ''}${artist ? ` by ${artist}` : ''}.`;
       break;
 
     case 'searching':
     case 'search_song':
       badgeClass = 'searching';
       badgeLabel = '🔍 Searching';
-      humanText  = `Searching for${song ? ` "${song}"` : ' songs'}${movie ? ` from "${movie}"` : ''}${artist ? ` by ${artist}` : ''} in the library.`;
+      humanText = `Searching for${song ? ` "${song}"` : ' songs'}${movie ? ` from "${movie}"` : ''}${artist ? ` by ${artist}` : ''} in the library.`;
       break;
 
     case 'downloading':
     case 'download_song':
       badgeClass = 'downloading';
       badgeLabel = '⬇ Downloading';
-      humanText  = `Starting download for${song ? ` "${song}"` : ''}${movie ? ` from "${movie}"` : ''}.`;
+      humanText = `Starting download for${song ? ` "${song}"` : ''}${movie ? ` from "${movie}"` : ''}.`;
       break;
 
     case 'paused':
       badgeClass = 'paused';
       badgeLabel = '⏸ Paused';
-      humanText  = 'Music paused.';
+      humanText = 'Music paused.';
       break;
 
     case 'resumed':
       badgeClass = 'resumed';
       badgeLabel = '▶ Resumed';
-      humanText  = 'Music resumed!';
+      humanText = 'Music resumed!';
       break;
 
     case 'stopped':
       badgeClass = 'stopped';
       badgeLabel = '⏹ Stopped';
-      humanText  = 'Music stopped.';
+      humanText = 'Music stopped.';
       break;
 
     case 'error':
       badgeClass = 'error';
       badgeLabel = 'Error';
-      humanText  = errMsg || 'Something went wrong on the backend.';
+      humanText = errMsg || 'Something went wrong on the backend.';
       break;
 
     case 'unknown_intent':
     default:
       badgeClass = 'unknown';
       badgeLabel = '❓ Unknown';
-      humanText  = "Sorry, I didn't catch that. Try: \"play [song]\", \"search [song]\", \"pause\", or \"download [song]\".";
+      humanText = "Sorry, I didn't catch that. Try: \"play [song]\", \"search [song]\", \"pause\", or \"download [song]\".";
   }
 
   // Build detail rows
   const rows = [];
-  if (song)   rows.push(`<div class="rc-row"><strong>Song:</strong> ${escHtml(song)}</div>`);
-  if (movie)  rows.push(`<div class="rc-row"><strong>Movie:</strong> ${escHtml(movie)}</div>`);
+  if (song) rows.push(`<div class="rc-row"><strong>Song:</strong> ${escHtml(song)}</div>`);
+  if (movie) rows.push(`<div class="rc-row"><strong>Movie:</strong> ${escHtml(movie)}</div>`);
   if (artist) rows.push(`<div class="rc-row"><strong>Artist:</strong> ${escHtml(artist)}</div>`);
 
   if (status === 'error' || status === 'unknown_intent') {
@@ -340,10 +339,10 @@ function buildResponseContent(response) {
 // =====================================================
 function escHtml(str) {
   return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function now() {
@@ -363,7 +362,7 @@ const LS_KEY = 'musicfy_chatbot_history';
 
 function saveHistory() {
   try { localStorage.setItem(LS_KEY, JSON.stringify(chatHistory.slice(-100))); }
-  catch {}
+  catch { }
 }
 
 function loadHistory() {
@@ -382,9 +381,9 @@ function renderHistoryTab() {
   }
   historyList.innerHTML = chatHistory.map(entry => {
     const isUser = entry.role === 'user';
-    const label  = isUser ? 'You' : 'Musicfy AI';
-    const cls    = isUser ? 'user-role' : 'ai-role';
-    const text   = isUser
+    const label = isUser ? 'You' : 'Musicfy AI';
+    const cls = isUser ? 'user-role' : 'ai-role';
+    const text = isUser
       ? escHtml(entry.text)
       : escHtml((entry.response?.status || 'response') + (entry.response?.data?.song ? ` — ${entry.response.data.song}` : ''));
     return `
