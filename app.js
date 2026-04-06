@@ -121,20 +121,39 @@ async function sendMessage() {
   setLoading(true);
 
   try {
-    const res = await fetch(`${BACKEND_URL}/chat`, {
+    const res = await fetch('http://13.234.225.151:3001/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': 'musicfy-secret-key-2026' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'musicfy-secret-key-2026'
+      },
+      mode: 'cors',
       body: JSON.stringify({ message: text }),
       signal: AbortSignal.timeout(30000),
     });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `HTTP ${res.status}`);
+    const data = await res.json();
+    const userText = text.toLowerCase();
+    let status = 'unknown_intent';
+    let songData = {};
+
+    if (userText.includes('play')) {
+      status = 'playing';
+      songData = { song: text.replace(/play/i, '').trim() };
+    } else if (userText.includes('pause')) {
+      status = 'paused';
+    } else if (userText.includes('stop')) {
+      status = 'stopped';
+    } else if (userText.includes('resume')) {
+      status = 'resumed';
+    } else if (userText.includes('search')) {
+      status = 'searching';
+      songData = { song: text.replace(/search/i, '').trim() };
+    } else if (userText.includes('download')) {
+      status = 'downloading';
     }
 
-    const data = await res.json();
-    const response = { status: 'unknown_intent', data: {}, message: data.reply || '' };
+    const response = { status, data: songData, message: data.reply || '' };
     executeIntent(response, text);
     appendAssistantBubble(text, response, 'Qwen');
 
