@@ -3,7 +3,7 @@
 // Use environment variables or window config for production deployment
 const PROXY_URL = 'http://3.108.193.86:3001';
 const BACKEND_URL = window.BACKEND_URL || PROXY_URL;
-const SITE_URL = window.SITE_URL || 'http://localhost:5174';
+const SITE_URL = window.location.origin;
 
 // --- State ---
 let chatHistory = [];     // { role: 'user'|'assistant', text, response, ts }
