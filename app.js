@@ -166,12 +166,12 @@ function executeIntent(response, originalMessage) {
   if (status === 'playing' || status === 'play_song') {
     const matches = findSongByQuery(songQ);
     if (matches.length > 0) playSong(matches[0]);
-  } else if (status === 'paused') {
+  } else if (status === 'paused' || status === 'pause_song') {
     audioPlayer.pause();
     updatePlayerBtn(false);
-  } else if (status === 'resumed') {
+  } else if (status === 'resumed' || status === 'resume_song') {
     if (audioPlayer.src) { audioPlayer.play(); updatePlayerBtn(true); }
-  } else if (status === 'stopped') {
+  } else if (status === 'stopped' || status === 'stop_song') {
     audioPlayer.pause();
     audioPlayer.currentTime = 0;
     updatePlayerBtn(false);
