@@ -136,27 +136,13 @@ async function sendMessage() {
     });
 
     const data = await res.json();
-    const userText = text.toLowerCase();
-    let status = 'unknown_intent';
-    let songData = {};
+    const replyText = data.reply || "I've processed your request.";
+    const response = {
+      status: data.intent || 'unknown_intent',
+      data: { song: data.song || data.movie || data.artist || '' },
+      message: replyText
+    };
 
-    if (userText.includes('play')) {
-      status = 'playing';
-      songData = { song: text.replace(/play/i, '').trim() };
-    } else if (userText.includes('pause')) {
-      status = 'paused';
-    } else if (userText.includes('stop')) {
-      status = 'stopped';
-    } else if (userText.includes('resume')) {
-      status = 'resumed';
-    } else if (userText.includes('search')) {
-      status = 'searching';
-      songData = { song: text.replace(/search/i, '').trim() };
-    } else if (userText.includes('download')) {
-      status = 'downloading';
-    }
-
-    const response = { status, data: songData, message: data.reply || '' };
     executeIntent(response, text);
     appendAssistantBubble(text, response, 'Qwen');
 
