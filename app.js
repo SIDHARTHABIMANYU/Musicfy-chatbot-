@@ -92,10 +92,13 @@ playerBtn.onclick = () => {
 // =====================================================
 async function checkBackend() {
   try {
-    const res = await fetch(`${BACKEND_URL}/`, { signal: AbortSignal.timeout(5000) });
+    const res = await fetch(`${BACKEND_URL}/health`, {
+      headers: { 'x-api-key': 'musicfy-secret-key-2026' },
+      signal: AbortSignal.timeout(5000)
+    });
     if (!res.ok) throw new Error('not ok');
     const data = await res.json();
-    setOnline(true, data.model_name);
+    setOnline(true, data.model);
   } catch {
     setOnline(false);
   }
