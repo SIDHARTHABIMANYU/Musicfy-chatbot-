@@ -1,7 +1,7 @@
 // =====================================================
 // MUSICFY AI CHAT ASSISTANT — Frontend Logic
 // Use environment variables or window config for production deployment
-const PROXY_URL = 'http://52.66.64.135:3001';
+const PROXY_URL = 'https://unmischievously-rheotropic-luca.ngrok-free.dev';
 const BACKEND_URL = window.BACKEND_URL || PROXY_URL;
 const SITE_URL = window.location.origin;
 
