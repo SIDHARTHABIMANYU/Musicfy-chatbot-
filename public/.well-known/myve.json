@@ -1,0 +1,13 @@
+{
+  "myve_version": "1.0",
+  "site_type": "music_assistant",
+  "mcp_endpoint": "https://unmischievously-rheotropic-luca.ngrok-free.dev/sse",
+  "intents": [
+    {
+      "action": "music.play",
+      "description": "Play a song",
+      "params": ["track"]
+    }
+  ],
+  "suggestions_accepted": true
+}
