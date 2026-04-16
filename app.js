@@ -93,7 +93,10 @@ playerBtn.onclick = () => {
 async function checkBackend() {
   try {
     const res = await fetch(`${BACKEND_URL}/health`, {
-      headers: { 'x-api-key': 'musicfy-secret-key-2026' },
+      headers: { 
+        'x-api-key': 'musicfy-secret-key-2026',
+        'ngrok-skip-browser-warning': 'true'
+      },
       signal: AbortSignal.timeout(5000)
     });
     if (!res.ok) throw new Error('not ok');
@@ -128,7 +131,8 @@ async function sendMessage() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': 'musicfy-secret-key-2026'
+        'x-api-key': 'musicfy-secret-key-2026',
+        'ngrok-skip-browser-warning': 'true'
       },
       mode: 'cors',
       body: JSON.stringify({ message: text }),
